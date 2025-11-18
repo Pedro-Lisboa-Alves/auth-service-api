@@ -5,6 +5,37 @@ using Microsoft.Identity.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
+// Configuração básica do OpenIddict
+builder.Services.AddOpenIddict()
+    .AddCore(options =>
+    {
+        options.UseEntityFrameworkCore()
+            .UseDbContext<AuthServiceApi.Data.ApplicationDbContext>();
+    })
+    .AddServer(options =>
+    {
+         options.SetTokenEndpointUris("/connect/token")
+             .SetAuthorizationEndpointUris("/connect/authorize")
+             .SetRevocationEndpointUris("/connect/revocation");
+
+        options.AllowAuthorizationCodeFlow()
+               .AllowRefreshTokenFlow()
+               .AllowClientCredentialsFlow();
+
+        options.RegisterScopes("openid", "profile", "email", "offline_access");
+
+        options.UseAspNetCore()
+            .EnableTokenEndpointPassthrough()
+            .EnableAuthorizationEndpointPassthrough();
+
+        options.AddDevelopmentEncryptionCertificate()
+               .AddDevelopmentSigningCertificate();
+    })
+    .AddValidation(options =>
+    {
+        options.UseLocalServer();
+        options.UseAspNetCore();
+    });
 
 // Add services to the container.
 // Configurar EF Core com SQLite (mover antes do Identity/Auth para evitar sobrescrita de esquemas)
