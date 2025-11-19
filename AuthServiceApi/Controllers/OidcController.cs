@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace AuthServiceApi.Controllers
 {
     [ApiController]
-    [Route("connect")]
+    [Route("v1/connect")]
     public class OidcController : Controller
     {
         [HttpGet("authorize")]
